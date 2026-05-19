@@ -1,0 +1,79 @@
+package com.example.projet_sigl.service;
+
+import com.example.projet_sigl.dto.ModuleDto;
+import com.example.projet_sigl.entity.Enseignant;
+import com.example.projet_sigl.entity.EnseignantModule;
+import com.example.projet_sigl.entity.EnseignantModule.EnseignantModuleId;
+import com.example.projet_sigl.entity.Module;
+import com.example.projet_sigl.exception.ResourceNotFoundException;
+import com.example.projet_sigl.mapper.ModuleMapper;
+import com.example.projet_sigl.repository.EnseignantModuleRepository;
+import com.example.projet_sigl.repository.EnseignantRepository;
+import com.example.projet_sigl.repository.ModuleRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ModuleService {
+
+    private final ModuleRepository moduleRepo;
+    private final EnseignantRepository enseignantRepo;
+    private final EnseignantModuleRepository emRepo;
+
+    public List<ModuleDto> findAll() {
+        return moduleRepo.findAll().stream().map(ModuleMapper::toDto).toList();
+    }
+
+    public ModuleDto findById(Long id) {
+        return ModuleMapper.toDto(
+                moduleRepo.findById(id).orElseThrow(() -> ResourceNotFoundException.of("Module", id))
+        );
+    }
+
+    public ModuleDto create(ModuleDto dto) {
+        Module m = ModuleMapper.toEntity(dto);
+        m.setIdModule(null);
+        return ModuleMapper.toDto(moduleRepo.save(m));
+    }
+
+    public ModuleDto update(Long id, ModuleDto dto) {
+        Module m = moduleRepo.findById(id).orElseThrow(() -> ResourceNotFoundException.of("Module", id));
+        m.setLibelle(dto.getLibelle());
+        return ModuleMapper.toDto(moduleRepo.save(m));
+    }
+
+    public void delete(Long id) {
+        if (!moduleRepo.existsById(id)) throw ResourceNotFoundException.of("Module", id);
+        moduleRepo.deleteById(id);
+    }
+
+    /** Affecter un enseignant à un module avec horodatage. */
+    public void affecterEnseignant(Long idModule, Long idEnseignant) {
+        Module m = moduleRepo.findById(idModule)
+                .orElseThrow(() -> ResourceNotFoundException.of("Module", idModule));
+        Enseignant e = enseignantRepo.findById(idEnseignant)
+                .orElseThrow(() -> ResourceNotFoundException.of("Enseignant", idEnseignant));
+
+        EnseignantModuleId pk = new EnseignantModuleId(e.getIdUtilisateur(), m.getIdModule());
+        if (emRepo.existsById(pk)) return; // déjà affecté, idempotent
+
+        EnseignantModule em = new EnseignantModule();
+        em.setId(pk);
+        em.setEnseignant(e);
+        em.setModule(m);
+        em.setDateAffectation(LocalDateTime.now());
+        emRepo.save(em);
+    }
+
+    public void desaffecterEnseignant(Long idModule, Long idEnseignant) {
+        EnseignantModuleId pk = new EnseignantModuleId(idEnseignant, idModule);
+        if (!emRepo.existsById(pk)) throw new ResourceNotFoundException("Affectation enseignant-module introuvable");
+        emRepo.deleteById(pk);
+    }
+}
