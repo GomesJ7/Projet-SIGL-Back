@@ -15,9 +15,9 @@ public class Promotion {
     @Column(name = "id_promotion")
     private Long idPromotion;
 
-    @Column(name = "nom_promotion", length = 100)
+    @Column(name = "nom_promotion", length = 100, nullable = false)
     private String nomPromotion;
 
-    @Column(name = "annee")
+    @Column(name = "annee", nullable = false)
     private Integer annee;
 }

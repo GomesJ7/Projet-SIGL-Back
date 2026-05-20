@@ -20,28 +20,28 @@ public class RapportStage {
     @Column(name = "id_rapport")
     private Long idRapport;
 
-    @Column(name = "date_depot")
+    @Column(name = "date_depot", nullable = false)
     private LocalDateTime dateDepot;
 
     /** Chemin du fichier PDF stocké sur le filesystem. */
-    @Column(name = "fichier", length = 255)
-    private String fichier;
+    @Column(name = "fichier_path", length = 255, nullable = false)
+    private String fichierPath;
 
-    @Column(name = "note", precision = 5, scale = 2)
+    @Column(name = "note", precision = 4, scale = 2)
     private BigDecimal note;
 
     @Column(name = "commentaire", columnDefinition = "TEXT")
     private String commentaire;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "statut", length = 20)
+    @Column(name = "statut", length = 20, nullable = false)
     private StatutType statut;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_stage", unique = true)
+    @JoinColumn(name = "id_stage", nullable = false)
     private Stage stage;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_apprenant")
+    @JoinColumn(name = "id_apprenant", nullable = false)
     private Apprenant apprenant;
 }

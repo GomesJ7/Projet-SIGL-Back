@@ -17,21 +17,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/rapports")
 @RequiredArgsConstructor
 public class RapportStageController {
 
     private final RapportStageService service;
+    private static final Logger logger = LoggerFactory.getLogger(RapportStageController.class);
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
     public List<RapportStageDto> findAll(@RequestParam(required = false) StatutType statut) {
+        logger.info("Fetching all reports with status: {}", statut);
         return statut == null ? service.findAll() : service.findByStatut(statut);
     }
 
     @GetMapping("/{id}")
-    public RapportStageDto findById(@PathVariable Long id) { return service.findById(id); }
+    public RapportStageDto findById(@PathVariable Long id) {
+        logger.info("Fetching report with id: {}", id);
+        return service.findById(id);
+    }
 
     @GetMapping("/apprenant/{idApprenant}")
     public List<RapportStageDto> findByApprenant(@PathVariable Long idApprenant) {
@@ -46,12 +54,14 @@ public class RapportStageController {
     public ResponseEntity<RapportStageDto> deposer(@RequestParam Long idStage,
                                                    @RequestParam Long idApprenant,
                                                    @RequestPart("fichier") MultipartFile fichier) {
+        logger.info("Depositing report for stage {} and apprenant {}", idStage, idApprenant);
         return ResponseEntity.status(HttpStatus.CREATED).body(service.deposer(idStage, idApprenant, fichier));
     }
 
     @GetMapping("/{id}/fichier")
     public ResponseEntity<Resource> telecharger(@PathVariable Long id) {
         Resource res = service.telecharger(id);
+        logger.info("Downloading file: {}", res.getFilename());
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + res.getFilename() + "\"")

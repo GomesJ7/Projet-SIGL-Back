@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 /**
  * Classe parent de tous les utilisateurs.
@@ -26,10 +27,10 @@ public class Utilisateur {
     @Column(name = "id_utilisateur")
     private Long idUtilisateur;
 
-    @Column(name = "nom", length = 100)
+    @Column(name = "nom", length = 100, nullable = false)
     private String nom;
 
-    @Column(name = "prenom", length = 100)
+    @Column(name = "prenom", length = 100, nullable = false)
     private String prenom;
 
     @Column(name = "email", length = 150, unique = true, nullable = false)
@@ -39,6 +40,15 @@ public class Utilisateur {
     private String motDePasse;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", length = 20)
+    @Column(name = "role", length = 20, nullable = false)
     private RoleType role;
+
+    @Column(name = "actif", nullable = false)
+    private Boolean actif = true;
+
+    @Column(name = "date_creation", nullable = false, updatable = false)
+    private LocalDateTime dateCreation = LocalDateTime.now();
+
+    @Column(name = "derniere_connexion")
+    private LocalDateTime derniereConnexion;
 }

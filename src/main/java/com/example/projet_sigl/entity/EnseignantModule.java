@@ -2,6 +2,8 @@ package com.example.projet_sigl.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -27,11 +29,13 @@ public class EnseignantModule {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idEnseignant")
     @JoinColumn(name = "id_enseignant")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Enseignant enseignant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idModule")
     @JoinColumn(name = "id_module")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Module module;
 
     @Column(name = "date_affectation")

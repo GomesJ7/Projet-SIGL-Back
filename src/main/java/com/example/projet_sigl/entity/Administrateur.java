@@ -21,12 +21,4 @@ public class Administrateur extends Utilisateur {
     @Column(name = "niveau_acces", length = 50)
     private String niveauAcces;
 
-    @Column(name = "date_creation")
-    private LocalDateTime dateCreation;
-
-    @Column(name = "derniere_connexion")
-    private LocalDateTime derniereConnexion;
-
-    @Column(name = "actif")
-    private Boolean actif;
 }

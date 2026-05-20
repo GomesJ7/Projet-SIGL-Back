@@ -19,8 +19,14 @@ public class Module {
     @Column(name = "id_module")
     private Long idModule;
 
-    @Column(name = "libelle", length = 100)
+    @Column(name = "code_module", length = 20, nullable = false, unique = true)
+    private String codeModule;
+
+    @Column(name = "libelle", length = 100, nullable = false)
     private String libelle;
+
+    @Column(name = "credits")
+    private Integer credits;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EnseignantModule> enseignantsAffectes = new HashSet<>();

@@ -23,6 +23,9 @@ public class Enseignant extends Utilisateur {
     @Column(name = "specialite", length = 100)
     private String specialite;
 
+    @Column(name = "grade", length = 100)
+    private String grade;
+
     /**
      * Affectations aux modules. Le mappedBy pointe vers le champ `enseignant`
      * de l'entité de liaison EnseignantModule.

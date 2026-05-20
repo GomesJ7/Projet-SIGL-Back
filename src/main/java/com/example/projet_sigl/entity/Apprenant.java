@@ -18,16 +18,26 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Apprenant extends Utilisateur {
 
-    @Column(name = "matricule", length = 50, unique = true)
+    @Column(name = "matricule", length = 50, unique = true, nullable = false)
     private String matricule;
 
-    @Column(name = "niveau", length = 50)
+    @Column(name = "niveau", length = 50, nullable = true)
     private String niveau;
 
-    @Column(name = "date_naissance")
+    @Column(name = "date_naissance", nullable = true)
     private LocalDate dateNaissance;
 
+    @Column(name = "id_promotion", insertable = false, updatable = false)
+    private Long idPromotion;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_promotion")
+    @JoinColumn(name = "id_promotion", nullable = true)
     private Promotion promotion;
+
+    @Column(name = "id_filiere", insertable = false, updatable = false)
+    private Long idFiliere;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_filiere", nullable = true)
+    private Filiere filiere;
 }

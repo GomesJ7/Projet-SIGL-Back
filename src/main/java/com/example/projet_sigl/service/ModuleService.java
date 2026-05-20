@@ -13,6 +13,8 @@ import com.example.projet_sigl.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,14 +27,19 @@ public class ModuleService {
     private final ModuleRepository moduleRepo;
     private final EnseignantRepository enseignantRepo;
     private final EnseignantModuleRepository emRepo;
+    private static final Logger logger = LoggerFactory.getLogger(ModuleService.class);
 
     public List<ModuleDto> findAll() {
         return moduleRepo.findAll().stream().map(ModuleMapper::toDto).toList();
     }
 
     public ModuleDto findById(Long id) {
+        logger.info("Fetching module with id: {}", id);
         return ModuleMapper.toDto(
-                moduleRepo.findById(id).orElseThrow(() -> ResourceNotFoundException.of("Module", id))
+                moduleRepo.findById(id).orElseThrow(() -> {
+                    logger.error("Module not found with id: {}", id);
+                    return ResourceNotFoundException.of("Module", id);
+                })
         );
     }
 

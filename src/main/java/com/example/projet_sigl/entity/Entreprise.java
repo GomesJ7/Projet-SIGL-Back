@@ -23,4 +23,7 @@ public class Entreprise {
 
     @Column(name = "adresse_entreprise", length = 255)
     private String adresseEntreprise;
+
+    @Column(name = "telephone", length = 30)
+    private String telephone;
 }

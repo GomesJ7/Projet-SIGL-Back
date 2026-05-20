@@ -12,12 +12,11 @@ public final class RapportStageMapper {
         RapportStageDto dto = new RapportStageDto();
         dto.setIdRapport(r.getIdRapport());
         dto.setDateDepot(r.getDateDepot());
-        dto.setFichier(r.getFichier());
+        dto.setFichier(r.getFichierPath());
         dto.setNote(r.getNote());
         dto.setCommentaire(r.getCommentaire());
         dto.setStatut(r.getStatut());
         if (r.getStage() != null) dto.setIdStage(r.getStage().getIdStage());
-        if (r.getApprenant() != null) dto.setIdApprenant(r.getApprenant().getIdUtilisateur());
         return dto;
     }
 }

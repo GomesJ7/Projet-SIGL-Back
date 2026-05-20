@@ -64,8 +64,8 @@ public class RapportStageService {
         String filename = fileStorage.storePdf(pdf);
         RapportStage r = new RapportStage();
         r.setStage(s);
-        r.setApprenant(a);
-        r.setFichier(filename);
+        // Removed r.setApprenant(a) as the apprenant field does not exist in RapportStage
+        r.setFichierPath(filename);
         r.setDateDepot(LocalDateTime.now());
         r.setStatut(StatutType.EN_ATTENTE);
         return RapportStageMapper.toDto(rapportRepo.save(r));
@@ -98,14 +98,14 @@ public class RapportStageService {
     public Resource telecharger(Long idRapport) {
         RapportStage r = rapportRepo.findById(idRapport)
                 .orElseThrow(() -> ResourceNotFoundException.of("Rapport", idRapport));
-        if (r.getFichier() == null) throw new BusinessException("Aucun fichier associé");
-        return fileStorage.loadAsResource(r.getFichier());
+        if (r.getFichierPath() == null) throw new BusinessException("Aucun fichier associé");
+        return fileStorage.loadAsResource(r.getFichierPath());
     }
 
     public void delete(Long id) {
         RapportStage r = rapportRepo.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Rapport", id));
-        if (r.getFichier() != null) fileStorage.delete(r.getFichier());
+        if (r.getFichierPath() != null) fileStorage.delete(r.getFichierPath());
         rapportRepo.delete(r);
     }
 }
