@@ -9,13 +9,15 @@ public final class ModuleMapper {
 
     public static ModuleDto toDto(Module m) {
         if (m == null) return null;
-        return new ModuleDto(m.getIdModule(), m.getLibelle());
+        return new ModuleDto(m.getIdModule(), m.getCodeModule(), m.getLibelle(), m.getCredits());
     }
 
     public static Module toEntity(ModuleDto dto) {
         Module m = new Module();
         m.setIdModule(dto.getIdModule());
+        m.setCodeModule(dto.getCodeModule());
         m.setLibelle(dto.getLibelle());
+        m.setCredits(dto.getCredits());
         return m;
     }
 }

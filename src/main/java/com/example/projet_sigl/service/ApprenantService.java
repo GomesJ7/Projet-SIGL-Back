@@ -3,6 +3,7 @@ package com.example.projet_sigl.service;
 import com.example.projet_sigl.dto.ApprenantDto;
 import com.example.projet_sigl.dto.StageDto;
 import com.example.projet_sigl.entity.Apprenant;
+import com.example.projet_sigl.entity.Filiere;
 import com.example.projet_sigl.entity.Promotion;
 import com.example.projet_sigl.enums.RoleType;
 import com.example.projet_sigl.exception.DuplicateResourceException;
@@ -10,6 +11,7 @@ import com.example.projet_sigl.exception.ResourceNotFoundException;
 import com.example.projet_sigl.mapper.ApprenantMapper;
 import com.example.projet_sigl.mapper.StageMapper;
 import com.example.projet_sigl.repository.ApprenantRepository;
+import com.example.projet_sigl.repository.FiliereRepository;
 import com.example.projet_sigl.repository.PromotionRepository;
 import com.example.projet_sigl.repository.StageRepository;
 import com.example.projet_sigl.repository.UtilisateurRepository;
@@ -28,6 +30,7 @@ public class ApprenantService {
     private final ApprenantRepository apprenantRepo;
     private final UtilisateurRepository userRepo;
     private final PromotionRepository promotionRepo;
+    private final FiliereRepository filiereRepo;
     private final StageRepository stageRepo;
     private final PasswordEncoder passwordEncoder;
 
@@ -85,6 +88,16 @@ public class ApprenantService {
     public void delete(Long id) {
         if (!apprenantRepo.existsById(id)) throw ResourceNotFoundException.of("Apprenant", id);
         apprenantRepo.deleteById(id);
+    }
+
+    /** Affectation explicite à une filière. */
+    public ApprenantDto affecterFiliere(Long idApprenant, Long idFiliere) {
+        Apprenant a = apprenantRepo.findById(idApprenant)
+                .orElseThrow(() -> ResourceNotFoundException.of("Apprenant", idApprenant));
+        Filiere f = filiereRepo.findById(idFiliere)
+                .orElseThrow(() -> ResourceNotFoundException.of("Filiere", idFiliere));
+        a.setFiliere(f);
+        return ApprenantMapper.toDto(apprenantRepo.save(a));
     }
 
     /** Affectation explicite à une promotion (suivi académique). */

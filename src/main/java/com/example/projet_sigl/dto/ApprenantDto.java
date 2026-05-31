@@ -33,4 +33,6 @@ public class ApprenantDto {
     private LocalDate dateNaissance;
     private Long idPromotion;
     private String nomPromotion; // pratique pour l'affichage côté front
+    private Long idFiliere;
+    private String nomFiliere; // pratique pour l'affichage côté front
 }

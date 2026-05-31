@@ -12,5 +12,10 @@ public class ModuleDto {
     private Long idModule;
 
     @NotBlank
+    private String codeModule;
+
+    @NotBlank
     private String libelle;
+
+    private Integer credits;
 }

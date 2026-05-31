@@ -22,6 +22,10 @@ public final class ApprenantMapper {
             dto.setIdPromotion(a.getPromotion().getIdPromotion());
             dto.setNomPromotion(a.getPromotion().getNomPromotion());
         }
+        if (a.getFiliere() != null) {
+            dto.setIdFiliere(a.getFiliere().getIdFiliere());
+            dto.setNomFiliere(a.getFiliere().getNomFiliere());
+        }
         return dto;
     }
 

@@ -1,6 +1,8 @@
 package com.example.projet_sigl.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -9,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -20,6 +23,8 @@ import java.util.Map;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
@@ -55,9 +60,16 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.FORBIDDEN, "Accès refusé", req, null);
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoResource(NoResourceFoundException ex, HttpServletRequest req) {
+        return build(HttpStatus.NOT_FOUND, "Route API introuvable", req, null);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAll(Exception ex, HttpServletRequest req) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), req, null);
+        log.error("Erreur inattendue sur {} {} : {}", req.getMethod(), req.getRequestURI(), ex.getMessage(), ex);
+        String message = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, message, req, null);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String message,

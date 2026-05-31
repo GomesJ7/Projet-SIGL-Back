@@ -5,6 +5,8 @@ import com.example.projet_sigl.entity.Enseignant;
 import com.example.projet_sigl.entity.EnseignantModule;
 import com.example.projet_sigl.entity.EnseignantModule.EnseignantModuleId;
 import com.example.projet_sigl.entity.Module;
+import com.example.projet_sigl.exception.BusinessException;
+import com.example.projet_sigl.exception.DuplicateResourceException;
 import com.example.projet_sigl.exception.ResourceNotFoundException;
 import com.example.projet_sigl.mapper.ModuleMapper;
 import com.example.projet_sigl.repository.EnseignantModuleRepository;
@@ -13,6 +15,7 @@ import com.example.projet_sigl.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,9 @@ public class ModuleService {
     }
 
     public ModuleDto create(ModuleDto dto) {
+        if (moduleRepo.existsByCodeModule(dto.getCodeModule())) {
+            throw new DuplicateResourceException("Code module déjà utilisé : " + dto.getCodeModule());
+        }
         Module m = ModuleMapper.toEntity(dto);
         m.setIdModule(null);
         return ModuleMapper.toDto(moduleRepo.save(m));
@@ -51,13 +57,22 @@ public class ModuleService {
 
     public ModuleDto update(Long id, ModuleDto dto) {
         Module m = moduleRepo.findById(id).orElseThrow(() -> ResourceNotFoundException.of("Module", id));
+        if (moduleRepo.existsByCodeModuleAndIdModuleNot(dto.getCodeModule(), id)) {
+            throw new DuplicateResourceException("Code module déjà utilisé : " + dto.getCodeModule());
+        }
+        m.setCodeModule(dto.getCodeModule());
         m.setLibelle(dto.getLibelle());
+        m.setCredits(dto.getCredits());
         return ModuleMapper.toDto(moduleRepo.save(m));
     }
 
     public void delete(Long id) {
         if (!moduleRepo.existsById(id)) throw ResourceNotFoundException.of("Module", id);
-        moduleRepo.deleteById(id);
+        try {
+            moduleRepo.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BusinessException("Suppression impossible : le module est encore affecté (enseignants/apprenants).");
+        }
     }
 
     /** Affecter un enseignant à un module avec horodatage. */

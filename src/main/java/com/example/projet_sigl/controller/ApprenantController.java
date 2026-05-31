@@ -51,6 +51,12 @@ public class ApprenantController {
         return service.affecterPromotion(id, idPromotion);
     }
 
+    @PutMapping("/{id}/filiere/{idFiliere}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApprenantDto affecterFiliere(@PathVariable Long id, @PathVariable Long idFiliere) {
+        return service.affecterFiliere(id, idFiliere);
+    }
+
     @GetMapping("/{id}/stages")
     public List<StageDto> getHistoriqueStages(@PathVariable Long id) {
         return service.getHistoriqueStages(id);

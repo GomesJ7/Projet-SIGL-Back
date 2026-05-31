@@ -17,4 +17,6 @@ public interface ApprenantRepository extends JpaRepository<Apprenant, Long> {
     boolean existsByMatricule(String matricule);
 
     List<Apprenant> findByPromotion_IdPromotion(Long idPromotion);
+
+    long countByFiliere_IdFiliere(Long idFiliere);
 }

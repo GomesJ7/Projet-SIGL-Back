@@ -62,6 +62,11 @@ public class AuthService {
         );
         Utilisateur u = userRepo.findByEmail(req.getEmail())
                 .orElseThrow(() -> ResourceNotFoundException.of("Utilisateur", req.getEmail()));
+
+        // Persist la date de dernière connexion après authentification réussie.
+        u.setDerniereConnexion(LocalDateTime.now());
+        u = userRepo.save(u);
+
         return buildResponse(u);
     }
 

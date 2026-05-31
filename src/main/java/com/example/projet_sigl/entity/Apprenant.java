@@ -2,13 +2,8 @@ package com.example.projet_sigl.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
-/**
- * Apprenant : sous-classe de Utilisateur.
- * Lié à une Promotion (filière/année) et historique de stages via affectation_stage.
- */
 @Entity
 @Table(name = "apprenant")
 @PrimaryKeyJoinColumn(name = "id_utilisateur")
@@ -21,23 +16,19 @@ public class Apprenant extends Utilisateur {
     @Column(name = "matricule", length = 50, unique = true, nullable = false)
     private String matricule;
 
-    @Column(name = "niveau", length = 50, nullable = true)
+    @Column(name = "niveau", length = 50)
     private String niveau;
 
-    @Column(name = "date_naissance", nullable = true)
+    @Column(name = "date_naissance")
     private LocalDate dateNaissance;
 
-    @Column(name = "id_promotion", insertable = false, updatable = false)
-    private Long idPromotion;
-
+    // Suppression du "private Long idPromotion;" qui faisait doublon
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_promotion", nullable = true)
+    @JoinColumn(name = "id_promotion") // Gère automatiquement la FK id_promotion en BD
     private Promotion promotion;
 
-    @Column(name = "id_filiere", insertable = false, updatable = false)
-    private Long idFiliere;
-
+    // Suppression du "private Long idFiliere;" qui faisait doublon
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_filiere", nullable = true)
+    @JoinColumn(name = "id_filiere") // Gère automatiquement la FK id_filiere en BD
     private Filiere filiere;
 }
