@@ -25,7 +25,18 @@ public class Soutenance {
     @Column(name = "note_finale", precision = 5, scale = 2)
     private BigDecimal noteFinale;
 
+    @Column(name = "observation", columnDefinition = "TEXT")
+    private String observation;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_stage", unique = true)
     private Stage stage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_salle")
+    private Salle salle;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_jury")
+    private Jury jury;
 }

@@ -1,10 +1,13 @@
 package com.example.projet_sigl.service;
 
 import com.example.projet_sigl.dto.EntrepriseDto;
+import com.example.projet_sigl.dto.StageDto;
 import com.example.projet_sigl.entity.Entreprise;
 import com.example.projet_sigl.exception.ResourceNotFoundException;
 import com.example.projet_sigl.mapper.EntrepriseMapper;
+import com.example.projet_sigl.mapper.StageMapper;
 import com.example.projet_sigl.repository.EntrepriseRepository;
+import com.example.projet_sigl.repository.StageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import java.util.List;
 public class EntrepriseService {
 
     private final EntrepriseRepository repo;
+    private final StageRepository stageRepo;
 
     public List<EntrepriseDto> findAll() {
         return repo.findAll().stream().map(EntrepriseMapper::toDto).toList();
@@ -32,6 +36,13 @@ public class EntrepriseService {
         Entreprise e = EntrepriseMapper.toEntity(dto);
         e.setIdEntreprise(null);
         return EntrepriseMapper.toDto(repo.save(e));
+    }
+
+    /** Historique des stages pour une entreprise. */
+    public java.util.List<StageDto> getStages(Long idEntreprise) {
+        // vérifier que l'entreprise existe
+        if (!repo.existsById(idEntreprise)) throw ResourceNotFoundException.of("Entreprise", idEntreprise);
+        return stageRepo.findByEntreprise_IdEntreprise(idEntreprise).stream().map(StageMapper::toDto).toList();
     }
 
     public EntrepriseDto update(Long id, EntrepriseDto dto) {

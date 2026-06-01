@@ -57,6 +57,7 @@ public class StageService {
         s.setObjectif(dto.getObjectif());
         s.setDateDebut(dto.getDateDebut());
         s.setDateFin(dto.getDateFin());
+        s.setDureeSemaines(dto.getDureeSemaines());
         if (dto.getEtat() != null) s.setEtat(dto.getEtat());
         if (dto.getIdEntreprise() != null) {
             Entreprise e = entrepriseRepo.findById(dto.getIdEntreprise())

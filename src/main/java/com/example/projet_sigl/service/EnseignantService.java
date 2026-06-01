@@ -5,6 +5,7 @@ import com.example.projet_sigl.dto.ModuleDto;
 import com.example.projet_sigl.dto.StageDto;
 import com.example.projet_sigl.entity.Enseignant;
 import com.example.projet_sigl.enums.RoleType;
+import com.example.projet_sigl.exception.BusinessException;
 import com.example.projet_sigl.exception.DuplicateResourceException;
 import com.example.projet_sigl.exception.ResourceNotFoundException;
 import com.example.projet_sigl.mapper.EnseignantMapper;
@@ -46,6 +47,9 @@ public class EnseignantService {
         if (userRepo.existsByEmail(dto.getEmail())) {
             throw new DuplicateResourceException("Email déjà utilisé : " + dto.getEmail());
         }
+        if (dto.getMotDePasse() == null || dto.getMotDePasse().isBlank()) {
+            throw new BusinessException("Le mot de passe est obligatoire pour créer un enseignant.");
+        }
         Enseignant e = EnseignantMapper.toEntity(dto);
         e.setIdUtilisateur(null);
         e.setRole(RoleType.ENSEIGNANT);
@@ -56,10 +60,14 @@ public class EnseignantService {
     public EnseignantDto update(Long id, EnseignantDto dto) {
         Enseignant e = enseignantRepo.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Enseignant", id));
+        if (userRepo.existsByEmailAndIdUtilisateurNot(dto.getEmail(), id)) {
+            throw new DuplicateResourceException("Email déjà utilisé : " + dto.getEmail());
+        }
         e.setNom(dto.getNom());
         e.setPrenom(dto.getPrenom());
         e.setEmail(dto.getEmail());
         e.setSpecialite(dto.getSpecialite());
+        e.setGrade(dto.getGrade());
         if (dto.getMotDePasse() != null && !dto.getMotDePasse().isBlank()) {
             e.setMotDePasse(passwordEncoder.encode(dto.getMotDePasse()));
         }

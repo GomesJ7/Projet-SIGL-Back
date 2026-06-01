@@ -15,6 +15,7 @@ public final class StageMapper {
         dto.setObjectif(s.getObjectif());
         dto.setDateDebut(s.getDateDebut());
         dto.setDateFin(s.getDateFin());
+        dto.setDureeSemaines(s.getDureeSemaines());
         dto.setEtat(s.getEtat());
         if (s.getEntreprise() != null) {
             dto.setIdEntreprise(s.getEntreprise().getIdEntreprise());
@@ -30,6 +31,7 @@ public final class StageMapper {
         s.setObjectif(dto.getObjectif());
         s.setDateDebut(dto.getDateDebut());
         s.setDateFin(dto.getDateFin());
+        s.setDureeSemaines(dto.getDureeSemaines());
         s.setEtat(dto.getEtat());
         // entreprise gérée par le service
         return s;

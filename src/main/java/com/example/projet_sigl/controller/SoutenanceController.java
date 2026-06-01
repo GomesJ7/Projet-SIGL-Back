@@ -42,4 +42,10 @@ public class SoutenanceController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/verdict")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
+    public SoutenanceDto donnerVerdict(@PathVariable Long id, @Valid @RequestBody SoutenanceDto dto) {
+        return service.update(id, dto);
+    }
 }

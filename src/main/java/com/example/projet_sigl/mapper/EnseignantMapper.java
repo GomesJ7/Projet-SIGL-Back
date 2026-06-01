@@ -16,6 +16,7 @@ public final class EnseignantMapper {
         dto.setEmail(e.getEmail());
         dto.setRole(e.getRole());
         dto.setSpecialite(e.getSpecialite());
+        dto.setGrade(e.getGrade());
         return dto;
     }
 
@@ -28,6 +29,7 @@ public final class EnseignantMapper {
         e.setMotDePasse(dto.getMotDePasse());
         e.setRole(dto.getRole());
         e.setSpecialite(dto.getSpecialite());
+        e.setGrade(dto.getGrade());
         return e;
     }
 }

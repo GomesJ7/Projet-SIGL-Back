@@ -27,4 +27,5 @@ public class EnseignantDto {
 
     private RoleType role;
     private String specialite;
+    private String grade;
 }

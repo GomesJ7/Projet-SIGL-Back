@@ -33,6 +33,9 @@ public class Stage {
     @Column(name = "date_fin")
     private LocalDate dateFin;
 
+    @Column(name = "duree_semaines")
+    private Integer dureeSemaines;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "etat", length = 20)
     private EtatType etat;

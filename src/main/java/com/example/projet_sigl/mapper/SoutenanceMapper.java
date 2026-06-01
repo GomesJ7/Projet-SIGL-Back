@@ -13,7 +13,10 @@ public final class SoutenanceMapper {
         dto.setIdSoutenance(s.getIdSoutenance());
         dto.setDateSoutenance(s.getDateSoutenance());
         dto.setNoteFinale(s.getNoteFinale());
+        dto.setObservation(s.getObservation());
         if (s.getStage() != null) dto.setIdStage(s.getStage().getIdStage());
+        if (s.getSalle() != null) dto.setIdSalle(s.getSalle().getIdSalle());
+        if (s.getJury() != null) dto.setIdJury(s.getJury().getIdJury());
         return dto;
     }
 }

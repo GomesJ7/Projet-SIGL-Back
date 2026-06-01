@@ -1,6 +1,7 @@
 package com.example.projet_sigl.controller;
 
 import com.example.projet_sigl.dto.EntrepriseDto;
+import com.example.projet_sigl.dto.StageDto;
 import com.example.projet_sigl.service.EntrepriseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,9 @@ public class EntrepriseController {
 
     @GetMapping("/{id}")
     public EntrepriseDto findById(@PathVariable Long id) { return service.findById(id); }
+
+    @GetMapping("/{id}/stages")
+    public List<StageDto> getStages(@PathVariable Long id) { return service.getStages(id); }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")

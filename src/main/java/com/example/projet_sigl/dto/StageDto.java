@@ -24,6 +24,7 @@ public class StageDto {
     private LocalDate dateDebut;
 
     private LocalDate dateFin;
+    private Integer dureeSemaines;
 
     private EtatType etat;
     private Long idEntreprise;

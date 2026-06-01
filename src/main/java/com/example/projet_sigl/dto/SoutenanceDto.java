@@ -19,6 +19,12 @@ public class SoutenanceDto {
 
     private BigDecimal noteFinale;
 
+    private String observation;
+
     @NotNull
     private Long idStage;
+
+    private Long idSalle;
+
+    private Long idJury;
 }
