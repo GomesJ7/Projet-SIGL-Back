@@ -98,4 +98,12 @@ public class ModuleService {
         if (!emRepo.existsById(pk)) throw new ResourceNotFoundException("Affectation enseignant-module introuvable");
         emRepo.deleteById(pk);
     }
+
+    /** Récupérer les modules affectés à un enseignant. */
+    public List<ModuleDto> getModulesByEnseignant(Long idEnseignant) {
+        if (!enseignantRepo.existsById(idEnseignant)) throw ResourceNotFoundException.of("Enseignant", idEnseignant);
+        return emRepo.findByEnseignant_IdUtilisateur(idEnseignant).stream()
+                .map(em -> ModuleMapper.toDto(em.getModule()))
+                .toList();
+    }
 }

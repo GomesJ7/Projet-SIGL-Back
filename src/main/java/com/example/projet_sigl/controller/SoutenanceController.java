@@ -1,6 +1,7 @@
 package com.example.projet_sigl.controller;
 
 import com.example.projet_sigl.dto.SoutenanceDto;
+import com.example.projet_sigl.dto.SoutenanceVerdictDto;
 import com.example.projet_sigl.service.SoutenanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,12 @@ public class SoutenanceController {
     @GetMapping("/{id}")
     public SoutenanceDto findById(@PathVariable Long id) { return service.findById(id); }
 
+    @GetMapping("/enseignant/{idEnseignant}")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
+    public List<SoutenanceDto> findByEnseignantJury(@PathVariable Long idEnseignant) {
+        return service.findByEnseignantJury(idEnseignant);
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
     public ResponseEntity<SoutenanceDto> planifier(@Valid @RequestBody SoutenanceDto dto) {
@@ -45,7 +52,7 @@ public class SoutenanceController {
 
     @PatchMapping("/{id}/verdict")
     @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
-    public SoutenanceDto donnerVerdict(@PathVariable Long id, @Valid @RequestBody SoutenanceDto dto) {
-        return service.update(id, dto);
+    public SoutenanceDto donnerVerdict(@PathVariable Long id, @RequestBody SoutenanceVerdictDto dto) {
+        return service.updateVerdict(id, dto);
     }
 }

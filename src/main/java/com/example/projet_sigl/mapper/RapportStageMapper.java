@@ -12,11 +12,25 @@ public final class RapportStageMapper {
         RapportStageDto dto = new RapportStageDto();
         dto.setIdRapport(r.getIdRapport());
         dto.setDateDepot(r.getDateDepot());
-        dto.setFichier(r.getFichierPath());
+        dto.setTitre(r.getTitre());
+        dto.setFichier(r.getFichier());
+        dto.setFichierPath(r.getFichierPath());
+        dto.setVersionRapport(r.getVersionRapport());
         dto.setNote(r.getNote());
         dto.setCommentaire(r.getCommentaire());
         dto.setStatut(r.getStatut());
-        if (r.getStage() != null) dto.setIdStage(r.getStage().getIdStage());
+        if (r.getStage() != null) {
+            dto.setIdStage(r.getStage().getIdStage());
+            dto.setPosteStage(r.getStage().getPoste());
+            if (r.getStage().getEntreprise() != null) {
+                dto.setNomEntreprise(r.getStage().getEntreprise().getNomEntreprise());
+            }
+        }
+        if (r.getApprenant() != null) {
+            dto.setIdApprenant(r.getApprenant().getIdUtilisateur());
+            dto.setPrenomApprenant(r.getApprenant().getPrenom());
+            dto.setNomApprenant(r.getApprenant().getNom());
+        }
         return dto;
     }
 }

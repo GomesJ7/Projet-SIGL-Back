@@ -1,6 +1,7 @@
 package com.example.projet_sigl.service;
 
 import com.example.projet_sigl.dto.SoutenanceDto;
+import com.example.projet_sigl.dto.SoutenanceVerdictDto;
 import com.example.projet_sigl.entity.Soutenance;
 import com.example.projet_sigl.entity.Stage;
 import com.example.projet_sigl.entity.Salle;
@@ -35,6 +36,10 @@ public class SoutenanceService {
     public SoutenanceDto findById(Long id) {
         return SoutenanceMapper.toDto(soutRepo.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Soutenance", id)));
+    }
+
+    public List<SoutenanceDto> findByEnseignantJury(Long idEnseignant) {
+        return soutRepo.findByEnseignantJury(idEnseignant).stream().map(SoutenanceMapper::toDto).toList();
     }
 
     public SoutenanceDto planifier(SoutenanceDto dto) {
@@ -87,6 +92,14 @@ public class SoutenanceService {
             sout.setJury(null);
         }
 
+        return SoutenanceMapper.toDto(soutRepo.save(sout));
+    }
+
+    public SoutenanceDto updateVerdict(Long id, SoutenanceVerdictDto dto) {
+        Soutenance sout = soutRepo.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.of("Soutenance", id));
+        sout.setNoteFinale(dto.getNoteFinale());
+        sout.setObservation(dto.getObservation());
         return SoutenanceMapper.toDto(soutRepo.save(sout));
     }
 

@@ -1,6 +1,7 @@
 package com.example.projet_sigl.service;
 
 import com.example.projet_sigl.dto.EvaluationRapportDto;
+import com.example.projet_sigl.dto.CreateRapportStageDto;
 import com.example.projet_sigl.dto.RapportStageDto;
 import com.example.projet_sigl.entity.Apprenant;
 import com.example.projet_sigl.entity.RapportStage;
@@ -49,6 +50,12 @@ public class RapportStageService {
         return rapportRepo.findByStatut(statut).stream().map(RapportStageMapper::toDto).toList();
     }
 
+    public List<RapportStageDto> findByEnseignantAffectations(Long idEnseignant) {
+        return rapportRepo.findByEnseignantAffectations(idEnseignant).stream()
+                .map(RapportStageMapper::toDto)
+                .toList();
+    }
+
     /**
      * Dépôt d'un rapport : sauvegarde du PDF + création du RapportStage en statut EN_ATTENTE.
      * Contrainte SQL : un seul rapport par stage (id_stage UNIQUE).
@@ -64,8 +71,33 @@ public class RapportStageService {
         String filename = fileStorage.storePdf(pdf);
         RapportStage r = new RapportStage();
         r.setStage(s);
-        // Removed r.setApprenant(a) as the apprenant field does not exist in RapportStage
+        r.setApprenant(a);
+        r.setTitre("Rapport de stage");
         r.setFichierPath(filename);
+        r.setFichier(pdf.getOriginalFilename() == null ? filename : pdf.getOriginalFilename());
+        r.setVersionRapport("v1");
+        r.setDateDepot(LocalDateTime.now());
+        r.setStatut(StatutType.EN_ATTENTE);
+        return RapportStageMapper.toDto(rapportRepo.save(r));
+    }
+
+    /** Création manuelle d'un rapport en base sans upload de fichier. */
+    public RapportStageDto creerManuel(CreateRapportStageDto dto) {
+        Stage s = stageRepo.findById(dto.getIdStage())
+                .orElseThrow(() -> ResourceNotFoundException.of("Stage", dto.getIdStage()));
+        Apprenant a = apprenantRepo.findById(dto.getIdApprenant())
+                .orElseThrow(() -> ResourceNotFoundException.of("Apprenant", dto.getIdApprenant()));
+        if (rapportRepo.findByStage_IdStage(dto.getIdStage()).isPresent()) {
+            throw new BusinessException("Un rapport existe déjà pour ce stage");
+        }
+
+        RapportStage r = new RapportStage();
+        r.setStage(s);
+        r.setApprenant(a);
+        r.setTitre(dto.getTitre().trim());
+        r.setFichierPath(dto.getFichierPath().trim());
+        r.setVersionRapport(dto.getVersionRapport().trim());
+        r.setFichier(dto.getFichier().trim());
         r.setDateDepot(LocalDateTime.now());
         r.setStatut(StatutType.EN_ATTENTE);
         return RapportStageMapper.toDto(rapportRepo.save(r));

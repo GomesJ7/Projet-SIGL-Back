@@ -73,4 +73,10 @@ public class ModuleController {
         service.desaffecterEnseignant(idModule, idEnseignant);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-enseignant/{idEnseignant}")
+    public List<ModuleDto> getModulesByEnseignant(@PathVariable Long idEnseignant) {
+        logger.info("Fetching modules for enseignant: {}", idEnseignant);
+        return service.getModulesByEnseignant(idEnseignant);
+    }
 }

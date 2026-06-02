@@ -23,9 +23,19 @@ public class RapportStage {
     @Column(name = "date_depot", nullable = false)
     private LocalDateTime dateDepot;
 
+    @Column(name = "titre", length = 200)
+    private String titre;
+
     /** Chemin du fichier PDF stocké sur le filesystem. */
     @Column(name = "fichier_path", length = 255, nullable = false)
     private String fichierPath;
+
+    /** Nom du fichier PDF (ex: rapport_v2.pdf). */
+    @Column(name = "fichier", length = 255)
+    private String fichier;
+
+    @Column(name = "version_rapport", length = 50)
+    private String versionRapport;
 
     @Column(name = "note", precision = 4, scale = 2)
     private BigDecimal note;

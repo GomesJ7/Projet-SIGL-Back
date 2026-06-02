@@ -1,6 +1,7 @@
 package com.example.projet_sigl.controller;
 
 import com.example.projet_sigl.dto.EvaluationRapportDto;
+import com.example.projet_sigl.dto.CreateRapportStageDto;
 import com.example.projet_sigl.dto.RapportStageDto;
 import com.example.projet_sigl.enums.StatutType;
 import com.example.projet_sigl.service.RapportStageService;
@@ -46,9 +47,21 @@ public class RapportStageController {
         return service.findByApprenant(idApprenant);
     }
 
+    @GetMapping("/enseignant/{idEnseignant}/a-evaluer")
+    @PreAuthorize("hasAnyRole('ENSEIGNANT','ADMIN')")
+    public List<RapportStageDto> findByEnseignantAffectations(@PathVariable Long idEnseignant) {
+        return service.findByEnseignantAffectations(idEnseignant);
+    }
+
     /**
      * Dépôt d'un rapport. Multipart : `fichier` (PDF) + paramètres `idStage` et `idApprenant`.
      */
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('APPRENANT','ADMIN')")
+    public ResponseEntity<RapportStageDto> creerManuel(@Valid @RequestBody CreateRapportStageDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.creerManuel(dto));
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('APPRENANT','ADMIN')")
     public ResponseEntity<RapportStageDto> deposer(@RequestParam Long idStage,

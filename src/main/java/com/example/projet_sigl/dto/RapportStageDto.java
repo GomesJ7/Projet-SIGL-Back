@@ -14,10 +14,17 @@ import java.time.LocalDateTime;
 public class RapportStageDto {
     private Long idRapport;
     private LocalDateTime dateDepot;
+    private String titre;
     private String fichier;
+    private String fichierPath;
+    private String versionRapport;
     private BigDecimal note;
     private String commentaire;
     private StatutType statut;
     private Long idStage;
     private Long idApprenant;
+    private String prenomApprenant;
+    private String nomApprenant;
+    private String posteStage;
+    private String nomEntreprise;
 }
