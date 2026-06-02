@@ -20,9 +20,11 @@ public class SoutenanceController {
     private final SoutenanceService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public List<SoutenanceDto> findAll() { return service.findAll(); }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public SoutenanceDto findById(@PathVariable Long id) { return service.findById(id); }
 
     @GetMapping("/enseignant/{idEnseignant}")

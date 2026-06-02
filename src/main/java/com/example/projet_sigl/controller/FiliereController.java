@@ -19,6 +19,7 @@ public class FiliereController {
     private final FiliereService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public List<FiliereDto> findAll() { return service.findAll(); }
 
     @PostMapping

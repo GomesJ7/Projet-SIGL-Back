@@ -21,7 +21,7 @@ public class EnseignantController {
     private final EnseignantService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public List<EnseignantDto> findAll() { return service.findAll(); }
 
     @GetMapping("/{id}")

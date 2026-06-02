@@ -20,7 +20,7 @@ public class ApprenantController {
     private final ApprenantService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public List<ApprenantDto> findAll() { return service.findAll(); }
 
     @GetMapping("/{id}")

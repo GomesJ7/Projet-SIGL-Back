@@ -23,12 +23,14 @@ public class PromotionController {
     private static final Logger logger = LoggerFactory.getLogger(PromotionController.class);
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public List<PromotionDto> findAll() {
         logger.info("Fetching all promotions");
         return service.findAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public PromotionDto findById(@PathVariable Long id) {
         logger.info("Fetching promotion with id: {}", id);
         return service.findById(id);

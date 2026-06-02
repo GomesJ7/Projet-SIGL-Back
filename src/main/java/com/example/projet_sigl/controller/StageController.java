@@ -21,11 +21,13 @@ public class StageController {
     private final StageService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public List<StageDto> findAll(@RequestParam(required = false) EtatType etat) {
         return etat == null ? service.findAll() : service.findByEtat(etat);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT','APPRENANT')")
     public StageDto findById(@PathVariable Long id) { return service.findById(id); }
 
     @PostMapping
