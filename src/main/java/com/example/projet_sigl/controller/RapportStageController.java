@@ -88,6 +88,12 @@ public class RapportStageController {
     @PreAuthorize("hasRole('ENSEIGNANT')")
     public RapportStageDto rejeter(@PathVariable Long id) { return service.rejeter(id); }
 
+    @PatchMapping("/{id}/statut")
+    @PreAuthorize("hasRole('ENSEIGNANT')")
+    public RapportStageDto changerStatut(@PathVariable Long id, @RequestParam StatutType statut) {
+        return service.changerStatut(id, statut);
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

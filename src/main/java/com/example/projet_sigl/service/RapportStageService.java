@@ -5,6 +5,7 @@ import com.example.projet_sigl.dto.RapportStageDto;
 import com.example.projet_sigl.entity.Apprenant;
 import com.example.projet_sigl.entity.RapportStage;
 import com.example.projet_sigl.entity.Stage;
+import com.example.projet_sigl.enums.EtatType;
 import com.example.projet_sigl.enums.StatutType;
 import com.example.projet_sigl.exception.BusinessException;
 import com.example.projet_sigl.exception.ResourceNotFoundException;
@@ -65,6 +66,9 @@ public class RapportStageService {
     public RapportStageDto deposer(Long idStage, Long idApprenant, MultipartFile pdf, String titre, String versionRapport) {
         Stage s = stageRepo.findById(idStage)
                 .orElseThrow(() -> ResourceNotFoundException.of("Stage", idStage));
+        if (s.getEtat() != EtatType.VALIDE) {
+            throw new BusinessException("Le rapport ne peut etre depose que pour un stage valide par l'administrateur");
+        }
         Apprenant a = apprenantRepo.findById(idApprenant)
                 .orElseThrow(() -> ResourceNotFoundException.of("Apprenant", idApprenant));
         if (rapportRepo.findByStage_IdStage(idStage).isPresent()) {
@@ -105,14 +109,18 @@ public class RapportStageService {
     }
 
     public RapportStageDto valider(Long idRapport) {
-        return changerStatut(idRapport, StatutType.VALIDE);
+        return changerStatutInterne(idRapport, StatutType.VALIDE);
     }
 
     public RapportStageDto rejeter(Long idRapport) {
-        return changerStatut(idRapport, StatutType.REFUSE);
+        return changerStatutInterne(idRapport, StatutType.REFUSE);
     }
 
-    private RapportStageDto changerStatut(Long idRapport, StatutType statut) {
+    public RapportStageDto changerStatut(Long idRapport, StatutType statut) {
+        return changerStatutInterne(idRapport, statut);
+    }
+
+    private RapportStageDto changerStatutInterne(Long idRapport, StatutType statut) {
         RapportStage r = rapportRepo.findById(idRapport)
                 .orElseThrow(() -> ResourceNotFoundException.of("Rapport", idRapport));
         r.setStatut(statut);
