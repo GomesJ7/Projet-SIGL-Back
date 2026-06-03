@@ -1,7 +1,6 @@
 package com.example.projet_sigl.controller;
 
 import com.example.projet_sigl.dto.EvaluationRapportDto;
-import com.example.projet_sigl.dto.CreateRapportStageDto;
 import com.example.projet_sigl.dto.RapportStageDto;
 import com.example.projet_sigl.enums.StatutType;
 import com.example.projet_sigl.service.RapportStageService;
@@ -53,22 +52,16 @@ public class RapportStageController {
         return service.findByEnseignantAffectations(idEnseignant);
     }
 
-    /**
-     * Dépôt d'un rapport. Multipart : `fichier` (PDF) + paramètres `idStage` et `idApprenant`.
-     */
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('APPRENANT','ADMIN')")
-    public ResponseEntity<RapportStageDto> creerManuel(@Valid @RequestBody CreateRapportStageDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.creerManuel(dto));
-    }
-
+    /** Dépôt d'un rapport PDF. Multipart : `fichier` + `idStage` + `idApprenant` + params optionnels titre/version. */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('APPRENANT','ADMIN')")
     public ResponseEntity<RapportStageDto> deposer(@RequestParam Long idStage,
                                                    @RequestParam Long idApprenant,
-                                                   @RequestPart("fichier") MultipartFile fichier) {
+                                                   @RequestPart("fichier") MultipartFile fichier,
+                                                   @RequestParam(required = false) String titre,
+                                                   @RequestParam(required = false) String versionRapport) {
         logger.info("Depositing report for stage {} and apprenant {}", idStage, idApprenant);
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.deposer(idStage, idApprenant, fichier));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.deposer(idStage, idApprenant, fichier, titre, versionRapport));
     }
 
     @GetMapping("/{id}/fichier")

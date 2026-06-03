@@ -26,13 +26,18 @@ public class RapportStage {
     @Column(name = "titre", length = 200)
     private String titre;
 
-    /** Chemin du fichier PDF stocké sur le filesystem. */
+    /** Référence / lien métier du fichier. */
     @Column(name = "fichier_path", length = 255, nullable = false)
     private String fichierPath;
 
-    /** Nom du fichier PDF (ex: rapport_v2.pdf). */
-    @Column(name = "fichier", length = 255)
-    private String fichier;
+    /** Contenu binaire du PDF stocké en base (LONGBLOB). */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "fichier", nullable = false)
+    private byte[] fichier;
+
+    @Column(name = "nom_fichier", length = 255)
+    private String nomFichier;
 
     @Column(name = "version_rapport", length = 50)
     private String versionRapport;

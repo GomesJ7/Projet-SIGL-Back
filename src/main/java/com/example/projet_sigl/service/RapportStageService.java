@@ -1,7 +1,6 @@
 package com.example.projet_sigl.service;
 
 import com.example.projet_sigl.dto.EvaluationRapportDto;
-import com.example.projet_sigl.dto.CreateRapportStageDto;
 import com.example.projet_sigl.dto.RapportStageDto;
 import com.example.projet_sigl.entity.Apprenant;
 import com.example.projet_sigl.entity.RapportStage;
@@ -15,11 +14,13 @@ import com.example.projet_sigl.repository.RapportStageRepository;
 import com.example.projet_sigl.repository.StageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -60,7 +61,7 @@ public class RapportStageService {
      * Dépôt d'un rapport : sauvegarde du PDF + création du RapportStage en statut EN_ATTENTE.
      * Contrainte SQL : un seul rapport par stage (id_stage UNIQUE).
      */
-    public RapportStageDto deposer(Long idStage, Long idApprenant, MultipartFile pdf) {
+    public RapportStageDto deposer(Long idStage, Long idApprenant, MultipartFile pdf, String titre, String versionRapport) {
         Stage s = stageRepo.findById(idStage)
                 .orElseThrow(() -> ResourceNotFoundException.of("Stage", idStage));
         Apprenant a = apprenantRepo.findById(idApprenant)
@@ -68,36 +69,18 @@ public class RapportStageService {
         if (rapportRepo.findByStage_IdStage(idStage).isPresent()) {
             throw new BusinessException("Un rapport existe déjà pour ce stage");
         }
-        String filename = fileStorage.storePdf(pdf);
         RapportStage r = new RapportStage();
         r.setStage(s);
         r.setApprenant(a);
-        r.setTitre("Rapport de stage");
-        r.setFichierPath(filename);
-        r.setFichier(pdf.getOriginalFilename() == null ? filename : pdf.getOriginalFilename());
-        r.setVersionRapport("v1");
-        r.setDateDepot(LocalDateTime.now());
-        r.setStatut(StatutType.EN_ATTENTE);
-        return RapportStageMapper.toDto(rapportRepo.save(r));
-    }
-
-    /** Création manuelle d'un rapport en base sans upload de fichier. */
-    public RapportStageDto creerManuel(CreateRapportStageDto dto) {
-        Stage s = stageRepo.findById(dto.getIdStage())
-                .orElseThrow(() -> ResourceNotFoundException.of("Stage", dto.getIdStage()));
-        Apprenant a = apprenantRepo.findById(dto.getIdApprenant())
-                .orElseThrow(() -> ResourceNotFoundException.of("Apprenant", dto.getIdApprenant()));
-        if (rapportRepo.findByStage_IdStage(dto.getIdStage()).isPresent()) {
-            throw new BusinessException("Un rapport existe déjà pour ce stage");
+        r.setTitre((titre == null || titre.isBlank()) ? "Rapport de stage" : titre.trim());
+        r.setFichierPath(pdf.getOriginalFilename() == null ? "rapport.pdf" : pdf.getOriginalFilename());
+        try {
+            r.setFichier(pdf.getBytes());
+        } catch (IOException e) {
+            throw new BusinessException("Impossible de lire le PDF fourni");
         }
-
-        RapportStage r = new RapportStage();
-        r.setStage(s);
-        r.setApprenant(a);
-        r.setTitre(dto.getTitre().trim());
-        r.setFichierPath(dto.getFichierPath().trim());
-        r.setVersionRapport(dto.getVersionRapport().trim());
-        r.setFichier(dto.getFichier().trim());
+        r.setNomFichier(pdf.getOriginalFilename() == null ? "rapport.pdf" : pdf.getOriginalFilename());
+        r.setVersionRapport((versionRapport == null || versionRapport.isBlank()) ? "v1" : versionRapport.trim());
         r.setDateDepot(LocalDateTime.now());
         r.setStatut(StatutType.EN_ATTENTE);
         return RapportStageMapper.toDto(rapportRepo.save(r));
@@ -130,14 +113,18 @@ public class RapportStageService {
     public Resource telecharger(Long idRapport) {
         RapportStage r = rapportRepo.findById(idRapport)
                 .orElseThrow(() -> ResourceNotFoundException.of("Rapport", idRapport));
-        if (r.getFichierPath() == null) throw new BusinessException("Aucun fichier associé");
-        return fileStorage.loadAsResource(r.getFichierPath());
+        if (r.getFichier() == null || r.getFichier().length == 0) throw new BusinessException("Aucun fichier associé");
+        return new ByteArrayResource(r.getFichier()) {
+            @Override
+            public String getFilename() {
+                return r.getNomFichier() != null ? r.getNomFichier() : "rapport.pdf";
+            }
+        };
     }
 
     public void delete(Long id) {
         RapportStage r = rapportRepo.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.of("Rapport", id));
-        if (r.getFichierPath() != null) fileStorage.delete(r.getFichierPath());
         rapportRepo.delete(r);
     }
 }

@@ -14,6 +14,7 @@ public final class RapportStageMapper {
         dto.setDateDepot(r.getDateDepot());
         dto.setTitre(r.getTitre());
         dto.setFichier(r.getFichier());
+        dto.setNomFichier(r.getNomFichier());
         dto.setFichierPath(r.getFichierPath());
         dto.setVersionRapport(r.getVersionRapport());
         dto.setNote(r.getNote());

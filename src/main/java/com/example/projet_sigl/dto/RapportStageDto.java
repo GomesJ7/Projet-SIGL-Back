@@ -15,8 +15,9 @@ public class RapportStageDto {
     private Long idRapport;
     private LocalDateTime dateDepot;
     private String titre;
-    private String fichier;
+    private byte[] fichier;
     private String fichierPath;
+    private String nomFichier;
     private String versionRapport;
     private BigDecimal note;
     private String commentaire;
