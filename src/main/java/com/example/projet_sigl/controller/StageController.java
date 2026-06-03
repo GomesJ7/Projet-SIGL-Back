@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,11 +48,13 @@ public class StageController {
         return ResponseEntity.noContent().build();
     }
 
-    /** Changement d'état (EN_COURS -> TERMINE -> VALIDE/REFUSE). */
+    /** Changement d'état d'un stage, avec override total pour l'administrateur. */
     @PatchMapping("/{id}/etat")
     @PreAuthorize("hasAnyRole('ADMIN','ENSEIGNANT')")
-    public StageDto changerEtat(@PathVariable Long id, @RequestParam EtatType etat) {
-        return service.changerEtat(id, etat);
+    public StageDto changerEtat(@PathVariable Long id, @RequestParam EtatType etat, Authentication authentication) {
+        boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        return service.changerEtat(id, etat, isAdmin);
     }
 
     @PostMapping("/affectations")

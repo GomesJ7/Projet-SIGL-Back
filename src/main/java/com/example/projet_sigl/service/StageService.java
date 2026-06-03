@@ -73,11 +73,17 @@ public class StageService {
     }
 
     /**
-     * Changement d'état avec validation des transitions :
-     * EN_COURS -> TERMINE -> VALIDE/REFUSE.
+     * Changement d'état d'un stage.
+     * Un administrateur peut fixer librement n'importe quel état.
+     * Les autres rôles conservent les transitions métier historiques.
      */
-    public StageDto changerEtat(Long id, EtatType nouvelEtat) {
+    public StageDto changerEtat(Long id, EtatType nouvelEtat, boolean adminOverride) {
         Stage s = stageRepo.findById(id).orElseThrow(() -> ResourceNotFoundException.of("Stage", id));
+        if (adminOverride) {
+            s.setEtat(nouvelEtat);
+            return StageMapper.toDto(stageRepo.save(s));
+        }
+
         EtatType courant = s.getEtat();
         boolean ok = switch (courant == null ? EtatType.EN_COURS : courant) {
             case EN_COURS -> nouvelEtat == EtatType.TERMINE;
