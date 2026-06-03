@@ -15,6 +15,7 @@ import com.example.projet_sigl.repository.StageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,7 +84,15 @@ public class RapportStageService {
         r.setVersionRapport((versionRapport == null || versionRapport.isBlank()) ? "v1" : versionRapport.trim());
         r.setDateDepot(LocalDateTime.now());
         r.setStatut(StatutType.EN_ATTENTE);
-        return RapportStageMapper.toDto(rapportRepo.save(r));
+        try {
+            return RapportStageMapper.toDto(rapportRepo.save(r));
+        } catch (DataAccessException ex) {
+            String msg = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
+            if (msg != null && msg.contains("Packet for query is too large")) {
+                throw new BusinessException("Le PDF depasse la limite actuelle MySQL (max_allowed_packet). Augmentez cette variable serveur ou reduisez la taille du PDF.");
+            }
+            throw ex;
+        }
     }
 
     /** Évaluation par un enseignant : note + commentaire (le statut reste EN_ATTENTE). */
